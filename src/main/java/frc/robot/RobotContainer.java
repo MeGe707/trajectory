@@ -18,6 +18,8 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -33,61 +35,114 @@ import frc.robot.TrajectoriesContainer.TrajectoryFilesAndPaths.BlueTrajectoryFil
 import frc.robot.TrajectoriesContainer.TrajectoryFilesAndPaths.BlueTrajectoryFilesAndPaths.BlueTrajectoryFilesAndPathsWithTurret;
 import frc.robot.TrajectoriesContainer.TrajectoryFilesAndPaths.RedTrajectoryFilesAndPaths.RedTrajectoryFilesAndPathsWithOutTurret;
 import frc.robot.TrajectoriesContainer.TrajectoryFilesAndPaths.RedTrajectoryFilesAndPaths.RedTrajectoryFilesAndPathsWithTurret;
+import frc.robot.commands.DoNothing;
+import frc.robot.commands.FollowPathCommand;
+import frc.robot.commands.TwoballCommand;
 
 public class RobotContainer {
 
         final frc.robot.subsystems.DriveSubsystem m_robotDrive = new frc.robot.subsystems.DriveSubsystem();
         XboxController m_driverController = new XboxController(1);
-        // trajectoryDefinitions
 
-        public RobotContainer() {
+        SendableChooser<Command> autoChooser;
 
-                // Trajectory trajectoryBlue2BallLeftWithTurret =
-                // TrajectoryUtil.fromPathweaverJson(
-                // BlueTrajectoryFilesAndPathsWithTurret.trajectoryPathBlue2BallLeftWithTurret);
-                // Trajectory trajectoryBlue2BallMidWithTurret =
-                // TrajectoryUtil.fromPathweaverJson(
-                // BlueTrajectoryFilesAndPathsWithTurret.trajectoryPathBlue2BallMidWithTurret);
-                // Trajectory trajectoryBlue2BallRightWithTurret =
-                // TrajectoryUtil.fromPathweaverJson(
-                // BlueTrajectoryFilesAndPathsWithTurret.trajectoryPathBlue2BallRightWithTurret);
-
-                // Trajectory trajectoryBlue2BallLeftWithOutTurret =
-                // TrajectoryUtil.fromPathweaverJson(
-                // BlueTrajectoryFilesAndPathsWithOutTurret.trajectoryPathBlue2BallLeftWithOutTurret);
-                // Trajectory trajectoryBlue2BallMidWithOutTurret =
-                // TrajectoryUtil.fromPathweaverJson(
-                // BlueTrajectoryFilesAndPathsWithOutTurret.trajectoryPathBlue2BallMidWithOutTurret);
-                // Trajectory trajectoryBlue2BallRightWithOutTurret =
-                // TrajectoryUtil.fromPathweaverJson(
-                // BlueTrajectoryFilesAndPathsWithOutTurret.trajectoryPathBlue2BallRightWithOutTurret);
-
-                // Trajectory trajectoryRed2BallLeftWithTurret =
-                // TrajectoryUtil.fromPathweaverJson(
-                // RedTrajectoryFilesAndPathsWithTurret.trajectoryPathRed2BallLeftWithTurret);
-                // Trajectory trajectoryRed2BallMidWithTurret =
-                // TrajectoryUtil.fromPathweaverJson(
-                // RedTrajectoryFilesAndPathsWithTurret.trajectoryPathRed2BallMidWithTurret);
-                // Trajectory trajectoryRed2BallRightWithTurret =
-                // TrajectoryUtil.fromPathweaverJson(
-                // RedTrajectoryFilesAndPathsWithTurret.trajectoryPathRed2BallRightWithTurret);
-
-                // Trajectory trajectoryRed2BallLeftWithOutTurret =
-                // TrajectoryUtil.fromPathweaverJson(
-                // RedTrajectoryFilesAndPathsWithOutTurret.trajectoryPathRed2BallLeftWithOutTurret);
-                // Trajectory trajectoryRed2BallMidWithOutTurret =
-                // TrajectoryUtil.fromPathweaverJson(
-                // RedTrajectoryFilesAndPathsWithOutTurret.trajectoryPathRed2BallMidWithOutTurret);
-                // Trajectory trajectoryRed2BallRightWithOutTurret =
-                // TrajectoryUtil.fromPathweaverJson(
-                // RedTrajectoryFilesAndPathsWithOutTurret.trajectoryPathRed2BallRightWithOutTurret);
+        public RobotContainer() throws IOException {
 
                 configureButtonBindings();
+
+                autoChooser = new SendableChooser<>();
+                autoChooser.setDefaultOption("Do Nothing", new DoNothing(m_robotDrive));
+
+                autoChooser.addOption("Blue-Left-Turret+", new TwoballCommand(new FollowPathCommand(
+                                BlueTrajectoryFilesAndPathsWithTurret.trajectoryPathBlue2ballsLeftWithTurret1,
+                                m_robotDrive),
+                                new FollowPathCommand(
+                                                BlueTrajectoryFilesAndPathsWithTurret.trajectoryPathBlue2ballsLeftWithTurret2,
+                                                m_robotDrive)));
+
+                autoChooser.addOption("Blue-Mid-Turret+", new TwoballCommand(new FollowPathCommand(
+                                BlueTrajectoryFilesAndPathsWithTurret.trajectoryPathBlue2ballsMidWithTurret1,
+                                m_robotDrive),
+                                new FollowPathCommand(
+                                                BlueTrajectoryFilesAndPathsWithTurret.trajectoryPathBlue2ballsMidWithTurret2,
+                                                m_robotDrive)));
+
+                autoChooser.addOption("Blue-Right-Turret+", new TwoballCommand(new FollowPathCommand(
+                                BlueTrajectoryFilesAndPathsWithTurret.trajectoryPathBlue2ballsRightWithTurret1,
+                                m_robotDrive),
+                                new FollowPathCommand(
+                                                BlueTrajectoryFilesAndPathsWithTurret.trajectoryPathBlue2ballsRightWithTurret2,
+                                                m_robotDrive)));
+
+                autoChooser.addOption("Red-Left-Turret+", new TwoballCommand(new FollowPathCommand(
+                                RedTrajectoryFilesAndPathsWithTurret.trajectoryPathRed2ballsLeftWithTurret1,
+                                m_robotDrive),
+                                new FollowPathCommand(
+                                                RedTrajectoryFilesAndPathsWithTurret.trajectoryPathRed2ballsLeftWithTurret2,
+                                                m_robotDrive)));
+
+                autoChooser.addOption("Red-Mid-Turret+", new TwoballCommand(new FollowPathCommand(
+                                RedTrajectoryFilesAndPathsWithTurret.trajectoryPathRed2ballsMidWithTurret1,
+                                m_robotDrive),
+                                new FollowPathCommand(
+                                                RedTrajectoryFilesAndPathsWithTurret.trajectoryPathRed2ballsMidWithTurret2,
+                                                m_robotDrive)));
+
+                autoChooser.addOption("Red-Right-Turret+", new TwoballCommand(new FollowPathCommand(
+                                RedTrajectoryFilesAndPathsWithTurret.trajectoryPathRed2ballsRightWithTurret1,
+                                m_robotDrive),
+                                new FollowPathCommand(
+                                                RedTrajectoryFilesAndPathsWithTurret.trajectoryPathRed2ballsRightWithTurret2,
+                                                m_robotDrive)));
+
+                autoChooser.addOption("Blue-Left-Turret-", new TwoballCommand(new FollowPathCommand(
+                                BlueTrajectoryFilesAndPathsWithOutTurret.trajectoryPathBlue2ballsLeftWithOutTurret1,
+                                m_robotDrive),
+                                new FollowPathCommand(
+                                                BlueTrajectoryFilesAndPathsWithOutTurret.trajectoryPathBlue2ballsLeftWithOutTurret2,
+                                                m_robotDrive)));
+
+                autoChooser.addOption("Blue-Mid-Turret-", new TwoballCommand(new FollowPathCommand(
+                                BlueTrajectoryFilesAndPathsWithOutTurret.trajectoryPathBlue2ballsMidWithOutTurret1,
+                                m_robotDrive),
+                                new FollowPathCommand(
+                                                BlueTrajectoryFilesAndPathsWithOutTurret.trajectoryPathBlue2ballsMidWithOutTurret2,
+                                                m_robotDrive)));
+
+                autoChooser.addOption("Blue-Right-Turret-", new TwoballCommand(new FollowPathCommand(
+                                BlueTrajectoryFilesAndPathsWithOutTurret.trajectoryPathBlue2ballsRightWithOutTurret1,
+                                m_robotDrive),
+                                new FollowPathCommand(
+                                                BlueTrajectoryFilesAndPathsWithOutTurret.trajectoryPathBlue2ballsRightWithOutTurret2,
+                                                m_robotDrive)));
+
+                autoChooser.addOption("Red-Left-Turret-", new TwoballCommand(new FollowPathCommand(
+                                RedTrajectoryFilesAndPathsWithOutTurret.trajectoryPathRed2ballsLeftWithOutTurret1,
+                                m_robotDrive),
+                                new FollowPathCommand(
+                                                RedTrajectoryFilesAndPathsWithOutTurret.trajectoryPathRed2ballsLeftWithOutTurret2,
+                                                m_robotDrive)));
+
+                autoChooser.addOption("Red-Mid-Turret-", new TwoballCommand(new FollowPathCommand(
+                                RedTrajectoryFilesAndPathsWithOutTurret.trajectoryPathRed2ballsMidWithOutTurret1,
+                                m_robotDrive),
+                                new FollowPathCommand(
+                                                RedTrajectoryFilesAndPathsWithOutTurret.trajectoryPathRed2ballsMidWithOutTurret2,
+                                                m_robotDrive)));
+
+                autoChooser.addOption("Red-Right-Turret-", new TwoballCommand(new FollowPathCommand(
+                                RedTrajectoryFilesAndPathsWithOutTurret.trajectoryPathRed2ballsRightWithOutTurret1,
+                                m_robotDrive),
+                                new FollowPathCommand(
+                                                RedTrajectoryFilesAndPathsWithOutTurret.trajectoryPathRed2ballsRightWithOutTurret2,
+                                                m_robotDrive)));
+
+                SmartDashboard.putData(autoChooser);
 
         }
 
         private void configureButtonBindings() {
-                // Drive at half speed when the right bumper is held
+
                 new JoystickButton(m_driverController, Button.kRightBumper.value)
                                 .whenPressed(() -> m_robotDrive.setMaxOutput(0.5))
                                 .whenReleased(() -> m_robotDrive.setMaxOutput(1));
@@ -95,6 +150,6 @@ public class RobotContainer {
 
         public Command getAutonomousCommand() {
 
-                return null;
+                return autoChooser.getSelected();
         }
 }

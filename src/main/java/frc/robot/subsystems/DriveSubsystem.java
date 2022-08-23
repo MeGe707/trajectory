@@ -1,22 +1,23 @@
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
-import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import frc.libs.VelocityDutyCycleEncoder;
-import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
-public class DriveSubsystem {
+public class DriveSubsystem extends SubsystemBase {
 
     WPI_VictorSPX left_front = new WPI_VictorSPX(Constants.DriveTrainConstants.leftFrontCANID);
     WPI_VictorSPX left_back = new WPI_VictorSPX(Constants.DriveTrainConstants.leftBackCANID);
@@ -24,7 +25,7 @@ public class DriveSubsystem {
     WPI_VictorSPX right_front = new WPI_VictorSPX(Constants.DriveTrainConstants.rightFrontCANID);
     WPI_VictorSPX right_back = new WPI_VictorSPX(Constants.DriveTrainConstants.rightBackCANID);
 
-    CANSparkMax mid_neo = new CANSparkMax(Constants.DriveTrainConstants.midMotorCANID, MotorType.kBrushless);
+    WPI_TalonSRX mid_cim = new WPI_TalonSRX(5);
 
     MotorControllerGroup leftMotors = new MotorControllerGroup(left_front, left_back);
     MotorControllerGroup rightMotors = new MotorControllerGroup(right_front, right_back);
@@ -125,9 +126,26 @@ public class DriveSubsystem {
     public void periodic() {
         m_odometry.update(m_gyro.getRotation2d(), driveLeftEncoder.getDistance(), driveRightEncoder.getDistance());
 
-        SmartDashboard.putNumber("Left encoder value meters", getLeftEncoderPosition());
-        SmartDashboard.putNumber("RIGHT encoder value meters", getRightEncoderPosition());
-        SmartDashboard.putNumber("Gyro heading", getHeading());
+        SmartDashboard.putNumber("Left Encoder Position:", getLeftEncoderPosition());
+        SmartDashboard.putNumber("RIGHT Encoder Position:", getRightEncoderPosition());
+        SmartDashboard.putNumber("Average Encoder Position:", getAverageEncoderDistance());
+        SmartDashboard.putNumber("Left Encoder Velocity:", getLeftEncoderVelocity());
+        SmartDashboard.putNumber("Right Encoder Velocity:", getRightEncoderVelocity());
+        SmartDashboard.putBoolean("Left Encoder State", driveLeftEncoder.isConnected());
+        SmartDashboard.putBoolean("Right Encoder State", driveRightEncoder.isConnected());
+
+        SmartDashboard.putNumber("Gyro Heading:", getHeading());
+        SmartDashboard.putBoolean("Gyro State:", getGyro().isConnected());
+        SmartDashboard.putNumber("Gyro Turn Rate:", getGyro().getRate());
+
+        SmartDashboard.putNumber("Odometry Poisiton X:", m_odometry.getPoseMeters().getX());
+        SmartDashboard.putNumber("Odometry Position Y:", m_odometry.getPoseMeters().getY());
+        SmartDashboard.putNumber("Odometry Rotation 2D:", m_odometry.getPoseMeters().getRotation().getDegrees());
+        SmartDashboard.putNumber("Odomety Translation 2D X:", m_odometry.getPoseMeters().getTranslation().getX());
+        SmartDashboard.putNumber("Odomety Translation 2D Y:", m_odometry.getPoseMeters().getTranslation().getY());
+
+        SmartDashboard.putNumber("Differential Drive Speed Left:", getWheelSpeeds().leftMetersPerSecond);
+        SmartDashboard.putNumber("Differential Drive Speed Right:", getWheelSpeeds().rightMetersPerSecond);
     }
 
 }
